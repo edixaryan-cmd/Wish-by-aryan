@@ -4,32 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Happy Birthday Abdul!</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;800;900&display=swap" rel="stylesheet">
 <style>
     * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        font-family: 'Poppins', sans-serif;
     }
     body {
-        background-color: #0d0106;
-        color: #fff;
+        background-color: #030008;
+        color: #ffffff;
         display: flex;
         justify-content: center;
         align-items: center;
         min-height: 100vh;
-        overflow-x: hidden;
+        overflow: hidden;
     }
     .mobile-frame {
         width: 100%;
         max-width: 400px;
-        height: 700px;
-        background: #18030a;
-        border: 2px solid #ff2a75;
-        border-radius: 20px;
+        height: 720px;
+        background: radial-gradient(circle at top, #2b0820 0%, #08010b 100%);
+        border: 2px solid #ff0055;
+        border-radius: 28px;
         position: relative;
         overflow: hidden;
-        box-shadow: 0 0 25px rgba(255, 42, 117, 0.4);
+        box-shadow: 0 0 40px rgba(255, 0, 85, 0.6);
         display: flex;
         flex-direction: column;
     }
@@ -37,7 +38,7 @@
         display: none;
         width: 100%;
         height: 100%;
-        padding: 20px;
+        padding: 24px;
         flex-direction: column;
         align-items: center;
         justify-content: center;
@@ -45,333 +46,292 @@
         position: absolute;
         top: 0;
         left: 0;
-        background: #18030a;
     }
     .active { display: flex; }
 
-    /* Passcode Screen */
-    .passcode-title { font-size: 20px; margin-bottom: 20px; color: #ff80b3; letter-spacing: 1px; }
-    .dots { display: flex; gap: 10px; margin-bottom: 30px; }
-    .dot { width: 15px; height: 15px; border-radius: 50%; border: 2px solid #ff2a75; }
-    .dot.filled { background: #ff2a75; box-shadow: 0 0 10px #ff2a75; }
-    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 80%; }
-    .key {
-        width: 60px; height: 60px; border-radius: 50%; border: 1px solid #ff2a75;
-        display: flex; justify-content: center; align-items: center; font-size: 20px;
-        cursor: pointer; margin: 0 auto; user-select: none; transition: 0.2s;
+    /* Screen Titles & Bold Text */
+    h2, h3 {
+        font-weight: 900;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #ff3377;
+        text-shadow: 0 0 15px rgba(255, 51, 119, 0.6);
     }
-    .key:active { background: #ff2a75; transform: scale(0.95); }
+    p { font-weight: 600; color: #ffe6f0; }
 
-    /* Bow & Arrow Game */
-    .game-area { width: 100%; height: 300px; position: relative; border: 1px dashed #ff2a75; margin: 20px 0; border-radius: 12px; overflow: hidden; }
-    .target-heart { font-size: 60px; position: absolute; right: 20px; top: 40%; transition: transform 0.2s; }
-    .bow-arrow { font-size: 40px; position: absolute; left: 20px; top: 40%; cursor: pointer; transition: left 0.4s ease-in-out; }
-
-    /* Fullscreen Blast Overlay */
-    .fullscreen-blast {
-        position: absolute;
-        top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(24, 3, 10, 0.95);
-        display: none;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        z-index: 10;
-        animation: blastPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes blastPop {
-        0% { transform: scale(0); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
-    }
-    .blast-text {
-        font-size: 32px;
-        font-weight: bold;
-        color: #ff2a75;
-        text-shadow: 0 0 15px #ff2a75, 0 0 25px #ff80b3;
-        margin-bottom: 10px;
-        animation: pulse 1s infinite alternate;
-    }
-    @keyframes pulse {
-        0% { transform: scale(0.95); }
-        100% { transform: scale(1.05); }
-    }
-
-    /* Cake Page */
-    .cake { font-size: 80px; cursor: pointer; position: relative; margin: 30px 0; }
-    .flame { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 20px; animation: flicker 0.5s infinite alternate; }
-    @keyframes flicker { 0% { opacity: 1; } 100% { opacity: 0.3; } }
-
-    /* Envelope Page */
-    .envelope {
-        width: 200px; height: 120px; background: #ff2a75; border-radius: 10px;
-        position: relative; cursor: pointer; display: flex; justify-content: center; align-items: center;
-        margin-top: 30px; transition: transform 0.3s; box-shadow: 0 5px 15px rgba(255,42,117,0.3);
-    }
-    .envelope-flap {
-        position: absolute; top: 0; width: 0; height: 0;
-        border-left: 100px solid transparent; border-right: 100px solid transparent;
-        border-top: 60px solid #e01b5d; transform-origin: top; transition: 0.5s;
-    }
-    .letter {
-        width: 90%; background: #fff; color: #18030a; padding: 15px; border-radius: 8px;
-        display: none; margin-top: 20px; font-size: 13px; line-height: 1.5;
-    }
-
-    /* Balloon Pop Page */
-    .balloons-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; width: 100%; }
-    .balloon-card { 
-        position: relative; display: flex; flex-direction: column; align-items: center; 
-        background: rgba(255, 255, 255, 0.03); padding: 10px; border-radius: 12px; border: 1px solid rgba(255,42,117,0.2);
-    }
-    .balloon { 
-        font-size: 50px; cursor: pointer; transition: transform 0.2s; 
-        animation: float 2s infinite alternate ease-in-out;
-    }
-    @keyframes float {
-        0% { transform: translateY(0px); }
-        100% { transform: translateY(-8px); }
-    }
-    .balloon:active { transform: scale(1.3); }
-    .urdu-msg {
-        display: none; background: rgba(255, 42, 117, 0.25); border: 1px solid #ff2a75;
-        padding: 8px; border-radius: 8px; font-size: 12px; margin-top: 5px; width: 100%;
-        color: #ffccd5; animation: fadeIn 0.4s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* Photo Frame Styling */
-    .photo-frame {
-        width: 190px; height: 190px; border-radius: 15px; border: 3px solid #ff2a75;
-        object-fit: cover; margin: 15px 0; box-shadow: 0 0 15px rgba(255,42,117,0.5);
-    }
-
-    .beige-page { background: #fceade; color: #4a2e2b; }
-    .dark-card { background: rgba(255,255,255,0.08); border: 1px solid #ff2a75; padding: 15px; border-radius: 12px; margin: 15px 0; }
-
-    .age-badge {
-        font-size: 48px; font-weight: bold; color: #ff2a75; margin: 10px 0;
-        text-shadow: 0 0 10px rgba(255,42,117,0.5);
-    }
-
+    /* Buttons */
     .btn {
-        background: #ff2a75; color: white; border: none; padding: 10px 22px;
-        border-radius: 20px; font-size: 15px; cursor: pointer; margin-top: 15px;
-        box-shadow: 0 4px 10px rgba(255, 42, 117, 0.3); transition: 0.2s; z-index: 12;
+        background: linear-gradient(45deg, #ff0055, #ff5088);
+        color: white; border: none; padding: 14px 32px; border-radius: 30px;
+        font-size: 16px; font-weight: 800; text-transform: uppercase;
+        cursor: pointer; margin-top: 20px; box-shadow: 0 0 20px rgba(255, 0, 85, 0.6);
+        transition: all 0.2s ease; z-index: 30;
     }
+    .btn:hover { transform: scale(1.05); }
     .btn:active { transform: scale(0.95); }
+
+    /* SCREEN 1: Passcode */
+    .dots { display: flex; gap: 12px; margin: 25px 0; }
+    .dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #ff0055; }
+    .dot.filled { background: #ff0055; box-shadow: 0 0 12px #ff0055; }
+    .keypad { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 85%; }
+    .key {
+        width: 65px; height: 65px; border-radius: 50%; border: 2px solid rgba(255,0,85,0.4);
+        background: rgba(255,255,255,0.03); display: flex; justify-content: center; align-items: center;
+        font-size: 22px; font-weight: 800; cursor: pointer; margin: 0 auto; user-select: none; transition: 0.2s;
+    }
+    .key:active { background: #ff0055; transform: scale(0.9); }
+
+    /* SCREEN 2: Realistic Bow Game */
+    .game-area {
+        width: 100%; height: 320px; background: rgba(0,0,0,0.4);
+        border: 2px solid rgba(255,0,85,0.3); border-radius: 20px; position: relative;
+        overflow: hidden; display: flex; align-items: center; margin: 15px 0;
+    }
+    .bow { position: absolute; left: 15px; top: 120px; width: 50px; height: 80px; cursor: pointer; }
+    .arrow { position: absolute; left: 40px; top: 155px; width: 70px; height: 10px; transition: left 0.25s linear; }
+    .target { position: absolute; right: 20px; top: 120px; width: 70px; height: 70px; animation: float 2s infinite ease-in-out alternate; }
+    @keyframes float { 0% { transform: translateY(-10px); } 100% { transform: translateY(10px); } }
+
+    /* Blast Overlay */
+    .blast-screen {
+        position: absolute; top:0; left:0; width:100%; height:100%;
+        background: radial-gradient(circle, #ff0055 0%, #120008 90%);
+        display: none; flex-direction: column; justify-content: center; align-items: center;
+        z-index: 50; padding: 20px;
+    }
+    .blast-screen.active { display: flex; animation: zoomIn 0.3s forwards; }
+    @keyframes zoomIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+    /* SCREEN 3: Realistic Candle Blowing */
+    .cake-container { position: relative; margin: 40px 0 20px 0; width: 220px; height: 150px; background: #2a081a; border-radius: 20px; border-bottom: 12px solid #ff0055; }
+    .candles-row { display: flex; justify-content: space-evenly; position: absolute; top: -35px; width: 100%; padding: 0 20px; }
+    .candle { width: 12px; height: 40px; background: linear-gradient(#ff80b3, #fff); position: relative; cursor: pointer; border-radius: 4px; }
+    .flame {
+        position: absolute; top: -18px; left: -3px; width: 18px; height: 22px;
+        background: orange; border-radius: 50% 50% 20% 20%; box-shadow: 0 0 15px orange, 0 0 25px yellow;
+        animation: flicker 0.2s infinite alternate;
+    }
+    .flame.off { display: none; }
+    @keyframes flicker { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+
+    /* SCREEN 6: Realistic Balloon Pop */
+    .balloon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px; width: 100%; }
+    .balloon-box { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 16px; border: 1px solid rgba(255,0,85,0.3); display: flex; flex-direction: column; align-items: center; }
+    .balloon-item { font-size: 55px; cursor: pointer; transition: transform 0.1s; user-select: none; }
+    .balloon-item.popped { animation: pop 0.2s forwards; }
+    @keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.4); opacity: 0.5; } 100% { transform: scale(0); opacity: 0; display: none; } }
+    .dua-card { display: none; font-weight: 800; font-size: 13px; color: #ffd6e5; margin-top: 5px; line-height: 1.4; }
+
+    /* SCREEN 7: Ronaldo Photo Frame */
+    .ronaldo-frame {
+        width: 220px; height: 260px; border-radius: 20px; border: 4px solid #ff0055;
+        object-fit: cover; box-shadow: 0 0 30px rgba(255,0,85,0.8); margin: 20px 0;
+    }
 </style>
 </head>
 <body>
 
-<!-- Background Music -->
-<audio id="bg-music" src="song.mp3" loop></audio>
-
 <div class="mobile-frame">
-    <!-- SCREEN 1: PASSCODE SCREEN -->
-    <div class="page active" id="page1">
-        <h2 class="passcode-title">ENTER PASSCODE</h2>
+
+    <!-- SCREEN 1: PASSCODE -->
+    <div class="page active" id="p1">
+        <h2>ENTER PASSCODE</h2>
         <div class="dots">
-            <div class="dot" id="d1"></div>
-            <div class="dot" id="d2"></div>
-            <div class="dot" id="d3"></div>
-            <div class="dot" id="d4"></div>
+            <div class="dot" id="d1"></div><div class="dot" id="d2"></div>
+            <div class="dot" id="d3"></div><div class="dot" id="d4"></div>
         </div>
         <div class="keypad">
-            <div class="key" onclick="pressKey('1')">1</div>
-            <div class="key" onclick="pressKey('2')">2</div>
-            <div class="key" onclick="pressKey('3')">3</div>
-            <div class="key" onclick="pressKey('4')">4</div>
-            <div class="key" onclick="pressKey('5')">5</div>
-            <div class="key" onclick="pressKey('6')">6</div>
-            <div class="key" onclick="pressKey('7')">7</div>
-            <div class="key" onclick="pressKey('8')">8</div>
-            <div class="key" onclick="pressKey('9')">9</div>
-            <div class="key" style="grid-column: 2;" onclick="pressKey('0')">0</div>
+            <div class="key" onclick="keyInput('1')">1</div><div class="key" onclick="keyInput('2')">2</div><div class="key" onclick="keyInput('3')">3</div>
+            <div class="key" onclick="keyInput('4')">4</div><div class="key" onclick="keyInput('5')">5</div><div class="key" onclick="keyInput('6')">6</div>
+            <div class="key" onclick="keyInput('7')">7</div><div class="key" onclick="keyInput('8')">8</div><div class="key" onclick="keyInput('9')">9</div>
+            <div class="key" style="grid-column: 2;" onclick="keyInput('0')">0</div>
         </div>
     </div>
 
-    <!-- SCREEN 2: BOW & ARROW GAME -->
-    <div class="page" id="page2">
-        <h3 style="color:#ff80b3;">Shoot the Target 🏹</h3>
+    <!-- SCREEN 2: BOW & ARROW REAL ANIMATION -->
+    <div class="page" id="p2">
+        <h2>SHOOT THE TARGET 🎯</h2>
         <div class="game-area">
-            <div class="bow-arrow" id="bow" onclick="shootArrow()">🏹</div>
-            <div class="target-heart" id="heart">💖</div>
+            <!-- Bow -->
+            <svg class="bow" viewBox="0 0 50 100" onclick="fireArrow()">
+                <path d="M 10 5 Q 45 50 10 95" stroke="#ff0055" stroke-width="6" fill="none"/>
+                <line x1="10" y1="5" x2="10" y2="95" stroke="#fff" stroke-width="2"/>
+            </svg>
+            <!-- Arrow -->
+            <svg class="arrow" id="arrowSvg" viewBox="0 0 70 10">
+                <line x1="0" y1="5" x2="60" y2="5" stroke="#fff" stroke-width="4"/>
+                <polygon points="60,0 70,5 60,10" fill="#ff0055"/>
+            </svg>
+            <!-- Target Heart -->
+            <svg class="target" id="targetSvg" viewBox="0 0 100 100">
+                <path d="M 10,30 A 20,20 0 0,1 50,30 A 20,20 0 0,1 90,30 Q 90,60 50,90 Q 10,60 10,30 Z" fill="#ff0055"/>
+            </svg>
         </div>
-        <p id="game-status" style="font-size: 14px;">Tap the bow to shoot the heart!</p>
+        <p>TAP THE BOW TO SHOOT!</p>
 
-        <!-- Fullscreen Blast Overlay Screen -->
-        <div class="fullscreen-blast" id="blastOverlay">
-            <div style="font-size: 60px; margin-bottom: 15px;">💥💖💥</div>
-            <div class="blast-text">HAPPY BIRTHDAY!</div>
-            <p style="font-size: 14px; color: #ffccd5; margin-bottom: 20px;">May your day be filled with love & joy! ✨</p>
-            <button class="btn" onclick="nextPage(3)">Next Step ➡️</button>
+        <!-- Blast Overlay -->
+        <div class="blast-screen" id="blastOverlay">
+            <h1 style="font-size: 32px; font-weight: 900; color: #fff; text-shadow: 0 0 20px #fff;">BULLSEYE! 💥</h1>
+            <h2 style="color: #ffff00; margin: 15px 0;">HAPPY BIRTHDAY ABDUL! 🎉</h2>
+            <button class="btn" onclick="goTo(3)">NEXT SCREEN ➡️</button>
         </div>
     </div>
 
-    <!-- SCREEN 3: BLOW CANDLES -->
-    <div class="page" id="page3">
-        <h3 style="color:#ff80b3;">Make a Wish 🕯️</h3>
-        <div class="cake" onclick="blowCandle()">
-            <span class="flame" id="flame">🔥</span>
-            🎂
+    <!-- SCREEN 3: REAL CANDLE BLOWING -->
+    <div class="page" id="p3">
+        <h2>BLOW THE CANDLES 🎂</h2>
+        <p style="font-size: 13px; margin-top: 5px;">Tap EACH candle flame to extinguish it!</p>
+        
+        <div class="cake-container">
+            <div class="candles-row">
+                <div class="candle" onclick="extinguish(1)"><div class="flame" id="f1"></div></div>
+                <div class="candle" onclick="extinguish(2)"><div class="flame" id="f2"></div></div>
+                <div class="candle" onclick="extinguish(3)"><div class="flame" id="f3"></div></div>
+                <div class="candle" onclick="extinguish(4)"><div class="flame" id="f4"></div></div>
+            </div>
         </div>
-        <p id="cake-status">Tap the cake to blow candles!</p>
-        <button class="btn" id="btn3" style="display:none;" onclick="nextPage(4)">Next ➡️</button>
+        <p id="candleStatus" style="color: #ff80b3; font-weight: 800;">4 Candles Remaining!</p>
+        <button class="btn" id="btn3" style="display:none;" onclick="goTo(4)">NEXT SCREEN ➡️</button>
     </div>
 
     <!-- SCREEN 4: AGE COUNTER & GREETING -->
-    <div class="page" id="page4">
-        <h2 style="color:#ff80b3;">HAPPY BIRTHDAY! 🎉</h2>
-        <div class="age-badge">20</div> 
-        <p style="font-size: 16px; margin-bottom: 10px;">To My Best Friend, Abdul! ✨</p>
-        <div class="dark-card">
-            <p style="font-size: 13px; line-height: 1.6;">
-                Welcome to another amazing year of life! May this year bring you endless happiness, success, and prosperity.
-            </p>
+    <div class="page" id="p4">
+        <h2>HAPPY BIRTHDAY! 🎉</h2>
+        <h1 style="font-size: 65px; font-weight: 900; color: #ff0055; text-shadow: 0 0 20px #ff0055;">20</h1>
+        <p style="font-size: 18px; margin-bottom: 15px;">To My Best Friend, Abdul! ✨</p>
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; border: 1px solid #ff0055;">
+            <p style="font-size: 13px; line-height: 1.6;">Welcome to another legendary year! May your year be filled with unmatched success, power, and happiness!</p>
         </div>
-        <button class="btn" onclick="nextPage(5)">Open Envelope ✉️</button>
+        <button class="btn" onclick="goTo(5)">OPEN LETTER ✉️</button>
     </div>
 
     <!-- SCREEN 5: ENVELOPE LETTER -->
-    <div class="page" id="page5">
-        <h3 style="color:#ff80b3;">A Letter For You 💌</h3>
-        <div class="envelope" id="envelope" onclick="openEnvelope()">
-            <div class="envelope-flap" id="flap"></div>
-            💌
+    <div class="page" id="p5">
+        <h2>SPECIAL LETTER 💌</h2>
+        <div id="env" onclick="openLetter()" style="width:180px; height:110px; background:#ff0055; border-radius:12px; margin:30px 0; display:flex; justify-content:center; align-items:center; cursor:pointer; font-size:40px; box-shadow:0 0 20px rgba(255,0,85,0.5);">
+            ✉️
         </div>
-        <div class="letter" id="letter">
-            <p><strong>Dear Abdul,</strong></p>
-            <p style="margin-top: 5px;">Happy Birthday! Wishing you all the happiness and prosperity in the world. Enjoy your day to the fullest! ✨</p>
+        <div id="letterBody" style="display:none; background:#fff; color:#000; padding:15px; border-radius:12px; font-size:13px; font-weight:700;">
+            Dear Abdul,<br>Happy Birthday Brother! Wish you all the glory and happiness in life! Enjoy your day to the max! 🚀
         </div>
-        <button class="btn" id="btn5" style="display:none;" onclick="nextPage(6)">Pop Balloons 🎈</button>
+        <button class="btn" id="btn5" style="display:none;" onclick="goTo(6)">POP BALLOONS 🎈</button>
     </div>
 
-    <!-- SCREEN 6: BALLOON POP GAME -->
-    <div class="page" id="page6">
-        <h3 style="color:#ff80b3;">Pop the Balloons 🎈</h3>
-        <p style="font-size: 12px; color: #ffccd5; margin-top: 5px;">Tap balloons to reveal special wishes!</p>
-        <div class="balloons-grid">
-            <div class="balloon-card">
-                <div class="balloon" onclick="popBalloon(this, 'msg1')">🎈</div>
-                <div class="urdu-msg" id="msg1">الله تمھارا نصیب اتنا خوبصورت کرے 🌸</div>
+    <!-- SCREEN 6: REAL BALLOON POPPING -->
+    <div class="page" id="p6">
+        <h2>POP BALLOONS 🎈</h2>
+        <p style="font-size: 12px;">Tap each balloon to reveal Urdu Duas!</p>
+        <div class="balloon-grid">
+            <div class="balloon-box">
+                <div class="balloon-item" onclick="popB(this, 'd1')">🎈</div>
+                <div class="dua-card" id="d1">الله تمھارا نصیب اتنا خوبصورت کرے 🌸</div>
             </div>
-            <div class="balloon-card">
-                <div class="balloon" onclick="popBalloon(this, 'msg2')">🎈</div>
-                <div class="urdu-msg" id="msg2">الله تمہیں وہ خوشیاں عطا فرمائے ✨</div>
+            <div class="balloon-box">
+                <div class="balloon-item" onclick="popB(this, 'd2')">🎈</div>
+                <div class="dua-card" id="d2">الله تمہیں وہ خوشیاں عطا فرمائے ✨</div>
             </div>
-            <div class="balloon-card">
-                <div class="balloon" onclick="popBalloon(this, 'msg3')">🎈</div>
-                <div class="urdu-msg" id="msg3">تمہارے چہرے کی مسکراہٹ ہمیشہ رہے 💖</div>
+            <div class="balloon-box">
+                <div class="balloon-item" onclick="popB(this, 'd3')">🎈</div>
+                <div class="dua-card" id="d3">تمہارے چہرے کی مسکراہٹ ہمیشہ رہے 💖</div>
             </div>
-            <div class="balloon-card">
-                <div class="balloon" onclick="popBalloon(this, 'msg4')">🎈</div>
-                <div class="urdu-msg" id="msg4">الله تمہیں ہر کامیابی عطا فرمائے 🤲</div>
+            <div class="balloon-box">
+                <div class="balloon-item" onclick="popB(this, 'd4')">🎈</div>
+                <div class="dua-card" id="d4">الله تمہیں ہر کامیابی عطا فرمائے 🤲</div>
             </div>
         </div>
-        <button class="btn" onclick="nextPage(7)">Memories 📸</button>
+        <button class="btn" onclick="goTo(7)">MEMORIES 📸</button>
     </div>
 
-    <!-- SCREEN 7: MEMORY SLIDE -->
-    <div class="page beige-page" id="page7">
-        <h3>Good Times & Memories 🌟</h3>
-        <img src="YOUR_IMAGE_1.jpg" class="photo-frame" alt="Photo" onerror="this.src='https://via.placeholder.com/190?text=Abdul+Photo'">
-        <p style="font-size: 14px; line-height: 1.5; padding: 0 10px;">
-            "To another year of great memories, laughter, and unbreakable friendship!"
-        </p>
-        <button class="btn" onclick="nextPage(8)">Final Wish ✨</button>
+    <!-- SCREEN 7: RONALDO PHOTO FIT -->
+    <div class="page" id="p7">
+        <h2>GOAT MEMORY 🐐</h2>
+        <!-- Fitted Ronaldo Image -->
+        <img src="1000015188.jpg" class="ronaldo-frame" alt="Ronaldo" onerror="this.src='https://i.ibb.co/68v8T3G/ronaldo.jpg'">
+        <p style="font-size: 15px; font-weight: 800;">"Attitude & Greatness like CR7!"</p>
+        <button class="btn" onclick="goTo(8)">FINAL WISH ✨</button>
     </div>
 
-    <!-- SCREEN 8: FINAL WISH & REPLAY CELEBRATION -->
-    <div class="page" id="page8">
-        <h3 style="color:#ff80b3;">One Last Wish 💖</h3>
-        <div class="dark-card" style="margin-bottom: 20px;">
-            <p style="font-size: 14px; line-height: 1.7; color: #ffccd5;">
-                May this new year bring you endless success, good health, and beautiful moments. I hope all your dreams come true! Ameen ✨🤲
-            </p>
+    <!-- SCREEN 8: FINAL WISH & REPLAY -->
+    <div class="page" id="p8">
+        <h2>FINAL CELEBRATION 💖</h2>
+        <div style="background: rgba(255,0,85,0.15); border: 2px solid #ff0055; padding: 20px; border-radius: 16px; margin: 20px 0;">
+            <p style="font-size: 14px; line-height: 1.6;">May this new age bring boundless victories and joy to your life. Keep shining like a star! Ameen ✨🤲</p>
         </div>
-        <div style="background:#fff; color:#4a2e2b; padding:15px; border-radius:12px; margin-bottom: 15px;">
-            <p style="font-size:15px; font-weight:bold;">In your smile, I found peace 💫</p>
-        </div>
-        <button class="btn" onclick="nextPage(1)">Replay Celebration 🔄</button>
+        <button class="btn" onclick="goTo(1)">REPLAY ALL 🔄</button>
     </div>
+
 </div>
 
 <script>
-    // Passcode Logic
     let code = "";
-    const correctCode = "1609";
+    const pass = "1609";
 
-    function pressKey(num) {
-        if (code.length < 4) {
-            code += num;
+    function keyInput(n) {
+        if(code.length < 4) {
+            code += n;
             document.getElementById(`d${code.length}`).classList.add('filled');
         }
-        if (code.length === 4) {
-            if (code === correctCode) {
-                const audio = document.getElementById('bg-music');
-                audio.play().catch(e => console.log("Audio play deferred:", e));
-                
-                setTimeout(() => { nextPage(2); resetPasscode(); }, 300);
+        if(code.length === 4) {
+            if(code === pass) {
+                setTimeout(() => { goTo(2); resetPass(); }, 200);
             } else {
-                alert("Incorrect Code!");
-                resetPasscode();
+                alert("Wrong Passcode!");
+                resetPass();
             }
         }
     }
 
-    function resetPasscode() {
+    function resetPass() {
         code = "";
-        for (let i = 1; i <= 4; i++) {
-            document.getElementById(`d${i}`).classList.remove('filled');
+        for(let i=1; i<=4; i++) document.getElementById(`d${i}`).classList.remove('filled');
+    }
+
+    function goTo(p) {
+        document.querySelectorAll('.page').forEach(pg => pg.classList.remove('active'));
+        document.getElementById(`p${p}`).classList.add('active');
+    }
+
+    /* Screen 2 Game Logic */
+    function fireArrow() {
+        const arr = document.getElementById('arrowSvg');
+        arr.style.left = '230px';
+        setTimeout(() => {
+            document.getElementById('blastOverlay').classList.add('active');
+        }, 250);
+    }
+
+    /* Screen 3 Candle Logic */
+    let candlesLeft = 4;
+    function extinguish(id) {
+        const flame = document.getElementById(`f${id}`);
+        if(!flame.classList.contains('off')) {
+            flame.classList.add('off');
+            candlesLeft--;
+            if(candlesLeft > 0) {
+                document.getElementById('candleStatus').innerText = `${candlesLeft} Candles Remaining!`;
+            } else {
+                document.getElementById('candleStatus').innerText = "All Candles Blown Out! 🎉";
+                document.getElementById('btn3').style.display = 'inline-block';
+            }
         }
     }
 
-    // Page Navigation
-    function nextPage(pageNum) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById(`page${pageNum}`).classList.add('active');
-        
-        // Reset blast overlay on page change
-        if(pageNum === 2) {
-            document.getElementById('blastOverlay').style.display = 'none';
-            document.getElementById('bow').style.left = '20px';
-        }
+    /* Screen 5 Letter */
+    function openLetter() {
+        document.getElementById('env').style.display = 'none';
+        document.getElementById('letterBody').style.display = 'block';
+        document.getElementById('btn5').style.display = 'inline-block';
     }
 
-    // Bow Game Fullscreen Blast Logic
-    function shootArrow() {
-        const bow = document.getElementById('bow');
-        bow.style.left = '230px'; // Arrow moves towards target
-        
+    /* Screen 6 Balloon Pop */
+    function popB(el, duaId) {
+        el.classList.add('popped');
         setTimeout(() => {
-            // Trigger Fullscreen Blast
-            const overlay = document.getElementById('blastOverlay');
-            overlay.style.display = 'flex';
-        }, 400);
-    }
-
-    // Blow Candle Logic
-    function blowCandle() {
-        document.getElementById('flame').style.display = 'none';
-        document.getElementById('cake-status').innerText = 'Yay! Wish made 🎉';
-        document.getElementById('btn3').style.display = 'inline-block';
-    }
-
-    // Envelope Letter Logic
-    function openEnvelope() {
-        document.getElementById('flap').style.transform = 'rotateX(180deg)';
-        setTimeout(() => {
-            document.getElementById('letter').style.display = 'block';
-            document.getElementById('btn5').style.display = 'inline-block';
-        }, 300);
-    }
-
-    // Pop Balloons Logic
-    function popBalloon(element, msgId) {
-        element.style.display = 'none';
-        document.getElementById(msgId).style.display = 'block';
+            el.style.display = 'none';
+            document.getElementById(duaId).style.display = 'block';
+        }, 200);
     }
 </script>
-
 </body>
-                </html>
+   </html>
