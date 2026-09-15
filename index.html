@@ -3,454 +3,308 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PROJECT // ABDUL 2026</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Orbitron:wght@500;700;900&family=Space+Grotesk:wght@400;600&display=swap" rel="stylesheet">
-    <!-- Three.js for 3D Background -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <!-- Canvas Confetti -->
+    <title>Birthday Terminal // Cyber Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@300;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Space Grotesk', sans-serif; }
-        body { background: #030308; color: #fff; overflow: hidden; height: 100vh; width: 100vw; }
-        
-        #webgl-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+        body { background: #08090d; color: #e2e8f0; display: flex; justify-content: center; align-items: center; min-height: 100vh; overflow-x: hidden; }
 
-        /* Fullscreen Confetti Canvas Layer Overlay */
-        #confetti-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 999;
+        .app-frame {
+            width: 100%; max-width: 420px; height: 100vh; max-height: 880px;
+            background: rgba(15, 23, 42, 0.95); border: 1px solid rgba(0, 242, 254, 0.2);
+            border-radius: 24px; position: relative; overflow-y: auto; overflow-x: hidden;
+            box-shadow: 0 0 30px rgba(0, 242, 254, 0.15); display: flex; flex-direction: column; align-items: center; padding: 20px 15px;
         }
 
-        .app-container {
-            position: relative;
-            z-index: 10;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
+        /* Top Steps Bar */
+        .steps-bar {
+            display: flex; gap: 8px; background: rgba(30, 41, 59, 0.8); padding: 6px 14px;
+            border-radius: 30px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100;
+        }
+        .step-dot {
+            width: 26px; height: 26px; border-radius: 50%; background: #1e293b; color: #94a3b8;
+            font-size: 0.75rem; display: flex; justify-content: center; align-items: center;
+            font-weight: 600; transition: 0.3s; font-family: 'Fira Code', monospace; cursor: pointer;
+        }
+        .step-dot.active { background: #00f2fe; color: #08090d; box-shadow: 0 0 12px #00f2fe; font-weight: bold; }
+
+        /* Floating Music Controller */
+        .music-btn {
+            position: absolute; top: 20px; right: 20px; background: rgba(30, 41, 59, 0.9);
+            width: 38px; height: 38px; border-radius: 50%; display: flex; justify-content: center;
+            align-items: center; cursor: pointer; border: 1px solid #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.3); z-index: 101;
         }
 
-        .agency-card {
-            background: rgba(12, 12, 26, 0.85);
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border: 1px solid rgba(0, 255, 204, 0.25);
-            box-shadow: 0 0 80px rgba(0, 255, 204, 0.15), inset 0 0 30px rgba(0, 255, 204, 0.05);
-            border-radius: 24px;
-            padding: 35px 25px;
-            max-width: 480px;
-            width: 100%;
-            text-align: center;
-            position: absolute;
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(0.9) translateY(30px);
-            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        /* Pages */
+        .page { display: none; width: 100%; text-align: center; flex-direction: column; align-items: center; animation: neonFade 0.4s ease-out; }
+        .page.active { display: flex; }
+        @keyframes neonFade { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+
+        h1, h2 { font-family: 'Fira Code', monospace; color: #00f2fe; margin-bottom: 10px; text-shadow: 0 0 8px rgba(0,242,254,0.4); }
+        p { color: #94a3b8; font-size: 0.9rem; line-height: 1.5; margin-bottom: 15px; }
+
+        /* Cyber Button */
+        .cyber-btn {
+            background: linear-gradient(135deg, #00f2fe, #4facfe); color: #08090d; border: none;
+            padding: 12px 28px; border-radius: 12px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 0 15px rgba(0, 242, 254, 0.4); margin-top: 15px; transition: 0.2s; font-family: 'Fira Code', monospace;
+        }
+        .cyber-btn:active { transform: scale(0.95); }
+
+        /* Cyber Ring Loader */
+        .cyber-loader {
+            width: 100px; height: 100px; border-radius: 50%; border: 3px solid rgba(0, 242, 254, 0.1);
+            border-top-color: #00f2fe; animation: spin 1s linear infinite; display: flex;
+            justify-content: center; align-items: center; margin: 40px 0; box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* Calendar */
+        .calendar-card { background: rgba(30, 41, 59, 0.6); padding: 15px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); width: 90%; }
+        .grid-cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; font-size: 0.8rem; font-family: 'Fira Code', monospace; }
+        .cal-day { padding: 8px 0; border-radius: 6px; color: #64748b; }
+        .cal-day.active { background: #00f2fe; color: #08090d; font-weight: bold; box-shadow: 0 0 10px #00f2fe; }
+
+        /* Terminal Cards */
+        .term-card {
+            background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(0, 242, 254, 0.2); border-left: 3px solid #00f2fe;
+            border-radius: 8px; padding: 12px 15px; margin: 6px 0; width: 90%; text-align: left;
+            font-size: 0.85rem; font-family: 'Fira Code', monospace; color: #38bdf8;
         }
 
-        .agency-card.active {
-            opacity: 1;
-            pointer-events: all;
-            transform: scale(1) translateY(0);
-        }
-
-        .badge {
-            display: inline-block;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 0.7rem;
-            letter-spacing: 3px;
-            color: #00ffcc;
-            background: rgba(0, 255, 204, 0.1);
-            border: 1px solid rgba(0, 255, 204, 0.4);
-            padding: 6px 16px;
-            border-radius: 50px;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        h1 {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            font-weight: 900;
-            background: linear-gradient(135deg, #fff 30%, #00ffcc 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-
-        p { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 25px; }
-
-        .pin-input-group {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin: 25px 0;
-        }
-
-        .pin-box {
-            width: 55px;
-            height: 65px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 1px solid rgba(0, 255, 204, 0.3);
-            border-radius: 12px;
-            color: #00ffcc;
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.8rem;
-            text-align: center;
-            outline: none;
-            transition: 0.3s;
-        }
-
-        .pin-box:focus {
-            border-color: #00ffcc;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.5);
-            background: rgba(0, 255, 204, 0.05);
-        }
-
-        .prime-btn {
-            background: linear-gradient(135deg, #00ffcc, #0099ff);
-            border: none;
-            color: #040814;
-            font-family: 'Orbitron', sans-serif;
-            font-weight: 700;
-            font-size: 0.9rem;
-            padding: 16px 32px;
-            border-radius: 14px;
-            width: 100%;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(0, 255, 204, 0.3);
-            transition: all 0.3s;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .prime-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 50px rgba(0, 255, 204, 0.6);
-        }
-
+        /* Terminal Box */
         .terminal-box {
-            background: rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-left: 3px solid #00ffcc;
-            border-radius: 12px;
-            padding: 20px;
-            text-align: left;
-            font-size: 0.95rem;
-            color: #e2e8f0;
-            margin-bottom: 25px;
-            line-height: 1.7;
+            width: 90%; background: #0f172a; border: 1px solid #334155; border-radius: 12px;
+            padding: 20px; text-align: left; box-shadow: 0 8px 20px rgba(0,0,0,0.4); margin: 20px 0;
         }
 
-        /* Balloon Stage Styles */
-        .balloon-container {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 140px;
-            margin: 20px 0;
-            position: relative;
+        /* Cyber Nodes */
+        .node-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .node-item {
+            width: 70px; height: 70px; background: rgba(30, 41, 59, 0.9); border: 1px solid #00f2fe;
+            border-radius: 12px; cursor: pointer; display: flex; justify-content: center; align-items: center;
+            color: #00f2fe; transition: 0.2s; font-size: 1.2rem; box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
         }
+        .node-item.popped { transform: scale(0); opacity: 0; pointer-events: none; }
 
-        .balloon {
-            font-size: 3.5rem;
-            cursor: pointer;
-            user-select: none;
-            animation: float 3s ease-in-out infinite alternate;
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: inline-block;
-        }
+        /* Photo Grid */
+        .photo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; margin: 15px 0; }
+        .photo-card { background: rgba(30, 41, 59, 0.7); padding: 8px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.05); }
+        .photo-card img { width: 100%; height: 110px; object-fit: cover; border-radius: 8px; filter: contrast(1.05); }
+        .photo-card p { font-size: 0.75rem; margin-top: 5px; color: #38bdf8; font-family: 'Fira Code', monospace; }
 
-        .balloon:nth-child(2) { animation-delay: 0.5s; }
-        .balloon:nth-child(3) { animation-delay: 1s; }
-
-        @keyframes float {
-            0% { transform: translateY(0px) rotate(-5deg); }
-            100% { transform: translateY(-20px) rotate(5deg); }
-        }
-
-        .balloon.popped {
-            transform: scale(0) !important;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .pop-score {
-            font-family: 'Orbitron', sans-serif;
-            color: #00ffcc;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            margin-bottom: 15px;
-        }
+        /* Canvas */
+        canvas { background: rgba(15, 23, 42, 0.8); border: 1px dashed #00f2fe; border-radius: 12px; touch-action: none; cursor: crosshair; }
     </style>
 </head>
 <body>
 
-<canvas id="webgl-bg"></canvas>
-<canvas id="confetti-canvas"></canvas>
+<!-- Direct Stream Link: Teri Meri Kahaani (Gabbar Is Back) -->
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://ia801503.us.archive.org/15/items/teri-meri-kahaani-gabbar-is-back/Teri%20Meri%20Kahaani%20-%20Gabbar%20Is%20Back.mp3" type="audio/mpeg">
+</audio>
 
-<div class="app-container">
-
-    <!-- SCREEN 1: SECURE VAULT -->
-    <div class="agency-card active" id="card1">
-        <span class="badge">CONFIDENTIAL ACCESS</span>
-        <h1>SYSTEM DECRYPTION</h1>
-        <p>This encrypted file is prepared specifically for <b>ABDUL</b>. Enter Passcode (1609) to access:</p>
-        
-        <div class="pin-input-group">
-            <input type="password" maxlength="1" class="pin-box" id="p1" onkeyup="nextPin(1)">
-            <input type="password" maxlength="1" class="pin-box" id="p2" onkeyup="nextPin(2)">
-            <input type="password" maxlength="1" class="pin-box" id="p3" onkeyup="nextPin(3)">
-            <input type="password" maxlength="1" class="pin-box" id="p4" onkeyup="nextPin(4)">
-        </div>
-
-        <button class="prime-btn" onclick="validateAuth()">AUTHENTICATE 🔓</button>
+<div class="app-frame">
+    <!-- Top Step Navigation -->
+    <div class="steps-bar">
+        <div class="step-dot active" onclick="goToPage(0)">00</div>
+        <div class="step-dot" onclick="goToPage(1)">01</div>
+        <div class="step-dot" onclick="goToPage(2)">02</div>
+        <div class="step-dot" onclick="goToPage(3)">03</div>
+        <div class="step-dot" onclick="goToPage(4)">04</div>
+        <div class="step-dot" onclick="goToPage(5)">05</div>
+        <div class="step-dot" onclick="goToPage(6)">06</div>
+        <div class="step-dot" onclick="goToPage(7)">07</div>
     </div>
 
-    <!-- SCREEN 2: SERIOUS STORY PART 1 -->
-    <div class="agency-card" id="card2">
-        <span class="badge">CHAPTER 01 // MEMORIES</span>
-        <h1>THE JOURNEY</h1>
+    <!-- Music Toggle Button -->
+    <div class="music-btn" id="mBtn" onclick="toggleAudio()">🎵</div>
+
+    <!-- PAGE 00: INITIALIZE -->
+    <div class="page active" id="p0">
+        <div class="cyber-loader">
+            <span style="font-size: 1.5rem; color: #00f2fe;">⚡</span>
+        </div>
+        <h2>SYSTEM.INIT()</h2>
+        <p>Preparing encrypted surprise sequence...</p>
+        <button class="cyber-btn" onclick="startExperience()">EXECUTE ➔</button>
+    </div>
+
+    <!-- PAGE 01: DATE LOG -->
+    <div class="page" id="p1">
+        <h2>TIMESTAMP LOG</h2>
+        <div class="calendar-card">
+            <h3 style="color:#00f2fe; font-family:'Fira Code'; font-size:1rem; margin-bottom:10px;">SEPTEMBER 2026</h3>
+            <div class="grid-cal">
+                <div>SU</div><div>MO</div><div>TU</div><div>WE</div><div>TH</div><div>FR</div><div>SA</div>
+                <div></div><div></div>1<div>2</div><div>3</div><div>4</div><div>5</div>
+                <div>6</div><div>7</div><div>8</div><div>9</div><div>10</div><div>11</div><div>12</div>
+                <div>13</div><div>14</div><div>15</div><div class="cal-day active">16</div><div>17</div><div>18</div><div>19</div>
+                <div>20</div><div>21</div><div>22</div><div>23</div><div>24</div><div>25</div><div>26</div>
+                <div>27</div><div>28</div><div>29</div><div>30</div>
+            </div>
+        </div>
+        <p style="margin-top: 15px; font-family: 'Fira Code'; color:#38bdf8;">> target_date: 16.09.2026</p>
+        <button class="cyber-btn" onclick="goToPage(2)">NEXT_MODULE ➔</button>
+    </div>
+
+    <!-- PAGE 02: WISHES -->
+    <div class="page" id="p2">
+        <h2>ARRAY_WISHES[]</h2>
+        <p>Executing positive parameters...</p>
+        <div class="term-card">> success = true; // May success follow you everywhere</div>
+        <div class="term-card">> happiness = infinity; // Endless smiles</div>
+        <div class="term-card">> health = 100%; // Stay strong always</div>
+        <div class="term-card">> dreams = fulfilled; // All goals unlocked</div>
+        <button class="cyber-btn" onclick="goToPage(3)">DECRYPT_LETTER ➔</button>
+    </div>
+
+    <!-- PAGE 03: LETTER TERMINAL -->
+    <div class="page" id="p3">
+        <h2>LETTER_DECRYPTED</h2>
         <div class="terminal-box">
-            <p>Life mein bohot se log aate hain aur chale jaate hain, lekin kuch dosti aisi hoti hain jo waqt ke sath aur mazboot hoti hain.</p>
-            <br>
-            <p>Humne sath mein bohot waqt guzara hai, bohot kuch dekha aur sikha hai. Aise dost life mein baar baar nahi milte...</p>
+            <p style="color:#00f2fe; font-family:'Fira Code';">$ cat letter.txt</p><br>
+            <p style="color:#e2e8f0;">Dear Abdul,</p><br>
+            <p style="color:#94a3b8;">May every single line of your life execute without any bugs. Wishing you continuous growth, unlimited success, and endless reasons to celebrate!</p>
         </div>
-        <button class="prime-btn" onclick="switchCard(3)">CONTINUE READING ➔</button>
+        <button class="cyber-btn" onclick="goToPage(4)">UNBOUND_NODES ➔</button>
     </div>
 
-    <!-- SCREEN 3: SERIOUS STORY PART 2 -->
-    <div class="agency-card" id="card3">
-        <span class="badge">CHAPTER 02 // REALITY</span>
-        <h1>THE TRUTH</h1>
-        <div class="terminal-box" style="border-left-color: #6366f1;">
-            <p>Maine yeh poori website raat ko baith kar hours de kar code ki hai taaki tujhe apna appreciation dikha sakoon.</p>
-            <br>
-            <p>Puraani yaadein, late night baatein, aur future ke plans... Par ek sach aisa hai jo mujhe aaj bolna hi padega.</p>
+    <!-- PAGE 04: INTERACTIVE NODES -->
+    <div class="page" id="p4">
+        <h2>UNLOCK NODES</h2>
+        <p>Tap nodes to trigger particle bursts.</p>
+        <div class="node-grid">
+            <div class="node-item" onclick="popNode(this)">⚡</div>
+            <div class="node-item" onclick="popNode(this)">💎</div>
+            <div class="node-item" onclick="popNode(this)">🚀</div>
+            <div class="node-item" onclick="popNode(this)">🔥</div>
+            <div class="node-item" onclick="popNode(this)">✨</div>
+            <div class="node-item" onclick="popNode(this)">🎯</div>
         </div>
-        <button class="prime-btn" onclick="switchCard(4)">NEXT STEP ➔</button>
+        <button class="cyber-btn" onclick="goToPage(5)">VIEW_GALLERY ➔</button>
     </div>
 
-    <!-- SCREEN 4: GIFT BOX -->
-    <div class="agency-card" id="card4">
-        <span class="badge">CHAPTER 03 // UNLOCK</span>
-        <h1>UNBOX THE EXPERIENCE</h1>
-        <p>Tap the gift box below to initiate celebration protocol.</p>
-        
-        <div style="font-size: 4.5rem; margin: 20px 0; cursor: pointer; filter: drop-shadow(0 0 20px rgba(0,255,204,0.5));" onclick="switchCard(5)">
-            🎁
+    <!-- PAGE 05: MEMORY VAULT -->
+    <div class="page" id="p5">
+        <h2>MEMORY_VAULT</h2>
+        <p>Moments stored in high resolution.</p>
+        <div class="photo-grid">
+            <div class="photo-card">
+                <img src="https://picsum.photos/200/200?random=1" alt="Memory">
+                <p>node_01.png</p>
+            </div>
+            <div class="photo-card">
+                <img src="https://picsum.photos/200/200?random=2" alt="Memory">
+                <p>node_02.png</p>
+            </div>
+            <div class="photo-card">
+                <img src="https://picsum.photos/200/200?random=3" alt="Memory">
+                <p>node_03.png</p>
+            </div>
+            <div class="photo-card">
+                <img src="https://picsum.photos/200/200?random=4" alt="Memory">
+                <p>node_04.png</p>
+            </div>
         </div>
-        
-        <p style="font-size: 0.8rem; color: #00ffcc;">Click to proceed to Balloon Pop Challenge</p>
+        <button class="cyber-btn" onclick="goToPage(6)">DRAW_CANVAS ➔</button>
     </div>
 
-    <!-- SCREEN 5: BALLOON POPPING GAME -->
-    <div class="agency-card" id="card5">
-        <span class="badge">STAGE 04 // CHALLENGE</span>
-        <h1>POP ALL BALLOONS! 🎈</h1>
-        <p>Bhai ka secret message unlock karne ke liye saare balloons fodna zaroori hai!</p>
-        
-        <div class="pop-score" id="popScore">POPPED: 0 / 3</div>
-
-        <div class="balloon-container">
-            <div class="balloon" onclick="popBalloon(this)">🎈</div>
-            <div class="balloon" onclick="popBalloon(this)">🎈</div>
-            <div class="balloon" onclick="popBalloon(this)">🎈</div>
-        </div>
-
-        <button class="prime-btn" id="finalBtn" style="opacity: 0.5; pointer-events: none;" onclick="switchCard(6)">REVEAL SECRET MESSAGE 🔓</button>
+    <!-- PAGE 06: NEON CANVAS -->
+    <div class="page" id="p6">
+        <h2>CYBER_CANVAS</h2>
+        <p>Draw neon constellation paths below 🌌</p>
+        <canvas id="drawCanvas" width="300" height="280"></canvas>
+        <button class="cyber-btn" onclick="goToPage(7)">SYSTEM_OVERRIDE ➔</button>
     </div>
 
-    <!-- SCREEN 6: FINAL ROAST REVEAL -->
-    <div class="agency-card" id="card6">
-        <span class="badge" style="color: #ff0055; border-color: #ff0055; background: rgba(255,0,85,0.1);">TRUTH REVEALED</span>
-        <h1 style="font-family: 'Cinzel', serif; font-size: 2rem; color: #00ffcc;">HAPPY BIRTHDAY!</h1>
-        <h2 style="font-family: 'Orbitron'; color: #fff; margin-bottom: 15px;">ABDUL 🎉</h2>
-        
-        <div class="terminal-box" style="border-left-color: #ff0055;">
-            <p style="color: #ff0055; font-weight: bold; font-size: 1.1rem; margin-bottom: 8px;">FINAL VERDICT:</p>
-            <p>Happy Birthday Abdul! Waise tu kisi kaam ka nahi hai, bas ladkiyon ke khate mein hota hai... nikamma chor! 🐷😂</p>
-            <br>
-            <p style="color: #e2e8f0;">Jokes apart, Happy Birthday bhai! Khush reh aur hamesha aise hi reh! 🔥</p>
-            <br>
-            <p style="color: #8892b0; font-size: 0.8rem;">— Custom Code Crafted by Aryan 👑</p>
+    <!-- PAGE 07: FINAL CELEBRATION -->
+    <div class="page" id="p7">
+        <h1 style="font-size: 2rem; margin-top: 15px; text-shadow:0 0 15px #00f2fe;">HAPPY BIRTHDAY!</h1>
+        <p style="font-size: 1.2rem; color: #00f2fe; font-weight: bold; font-family: 'Fira Code'; margin-bottom: 20px;">[ USER: ABDUL ]</p>
+        <div style="background: rgba(30, 41, 59, 0.8); border: 1px solid rgba(0,242,254,0.3); padding: 20px; border-radius: 16px; margin-bottom: 15px;">
+            <p style="color:#e2e8f0;">May your code run clean and your life be filled with happiness and victories.</p>
         </div>
-        
-        <button class="prime-btn" onclick="blastFullFireworks()">BLAST FULLSCREEN FIREWORKS 🎊</button>
+        <button class="cyber-btn" onclick="fireworks()">REPLAY_SURPRISE 🎉</button>
     </div>
-
 </div>
 
 <script>
-    // Audio Synthesizer
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playBeep(freq = 440, type = 'sine', duration = 0.1) {
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + duration);
+    const music = document.getElementById('bgMusic');
+
+    function startExperience() {
+        music.play().then(() => {
+            document.getElementById('mBtn').innerText = "🎵";
+        }).catch(() => {
+            console.log("Autoplay blocked by browser");
+        });
+        goToPage(1);
     }
 
-    // 3D Particle Background
-    const canvas = document.getElementById('webgl-bg');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-
-    const particlesGeometry = new THREE.BufferGeometry();
-    const count = 3000;
-    const positions = new Float32Array(count * 3);
-    const colors = new Float32Array(count * 3);
-
-    for(let i=0; i<count*3; i+=3) {
-        positions[i] = (Math.random() - 0.5) * 10;
-        positions[i+1] = (Math.random() - 0.5) * 10;
-        positions[i+2] = (Math.random() - 0.5) * 10;
-
-        colors[i] = 0.0;
-        colors[i+1] = Math.random() * 0.8 + 0.2;
-        colors[i+2] = Math.random() * 0.8 + 0.5;
-    }
-
-    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-
-    const particlesMaterial = new THREE.PointsMaterial({
-        size: 0.02,
-        vertexColors: true,
-        transparent: true,
-        opacity: 0.8
-    });
-
-    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
-    scene.add(particlesMesh);
-    camera.position.z = 3;
-
-    let mouseX = 0, mouseY = 0;
-    window.addEventListener('mousemove', (e) => {
-        mouseX = (e.clientX / window.innerWidth - 0.5) * 0.5;
-        mouseY = (e.clientY / window.innerHeight - 0.5) * 0.5;
-    });
-
-    function animate3D() {
-        requestAnimationFrame(animate3D);
-        particlesMesh.rotation.y += 0.002;
-        particlesMesh.rotation.x += 0.001;
-        camera.position.x += (mouseX - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY - camera.position.y) * 0.05;
-        renderer.render(scene, camera);
-    }
-    animate3D();
-
-    // Navigation & Auth
-    function nextPin(index) {
-        playBeep(600, 'sine', 0.05);
-        if (index < 4 && document.getElementById('p' + index).value != "") {
-            document.getElementById('p' + (index + 1)).focus();
-        }
-        if (index === 4) validateAuth();
-    }
-
-    function validateAuth() {
-        const pin = document.getElementById('p1').value + document.getElementById('p2').value + document.getElementById('p3').value + document.getElementById('p4').value;
-        if(pin === "1609") {
-            playBeep(880, 'triangle', 0.2);
-            switchCard(2);
-        } else {
-            playBeep(150, 'sawtooth', 0.3);
-            alert("Incorrect Passcode! Use 1609");
-            for(let i=1; i<=4; i++) document.getElementById('p'+i).value = "";
-            document.getElementById('p1').focus();
-        }
-    }
-
-    function switchCard(cardNumber) {
-        playBeep(520, 'sine', 0.08);
-        document.querySelectorAll('.agency-card').forEach(card => card.classList.remove('active'));
-        document.getElementById('card' + cardNumber).classList.add('active');
-        if(cardNumber === 6) blastFullFireworks();
-    }
-
-    // Balloon Pop Logic
-    let poppedCount = 0;
-    function popBalloon(elem) {
-        if (!elem.classList.contains('popped')) {
-            elem.classList.add('popped');
-            playBeep(900, 'sawtooth', 0.08);
-            poppedCount++;
-            document.getElementById('popScore').innerText = `POPPED: ${poppedCount} / 3`;
-            
-            // Mini burst on pop
-            confetti({
-                particleCount: 25,
-                spread: 60,
-                origin: { y: 0.5 }
-            });
-
-            if (poppedCount === 3) {
-                const btn = document.getElementById('finalBtn');
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'all';
-                btn.classList.add('pulse');
-            }
-        }
-    }
-
-    // Full Screen Multi-Angle Fireworks Animation
-    const myConfetti = confetti.create(document.getElementById('confetti-canvas'), {
-        resize: true,
-        useWorker: true
-    });
-
-    function blastFullFireworks() {
-        playBeep(700, 'square', 0.2);
+    function goToPage(index) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.step-dot').forEach(d => d.classList.remove('active'));
         
-        // Duration multi-burst
-        var duration = 3 * 1000;
-        var end = Date.now() + duration;
+        document.getElementById('p' + index).classList.add('active');
+        if(document.querySelectorAll('.step-dot')[index]) {
+            document.querySelectorAll('.step-dot')[index].classList.add('active');
+        }
 
-        (function frame() {
-            myConfetti({
-                particleCount: 7,
-                angle: 60,
-                spread: 55,
-                origin: { x: 0 }
-            });
-            myConfetti({
-                particleCount: 7,
-                angle: 120,
-                spread: 55,
-                origin: { x: 1 }
-            });
-
-            if (Date.now() < end) {
-                requestAnimationFrame(frame);
-            }
-        }());
+        if(index === 6) initCanvas();
+        if(index === 7) fireworks();
     }
 
-    window.addEventListener('resize', () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    function toggleAudio() {
+        const btn = document.getElementById('mBtn');
+        if (music.paused) {
+            music.play();
+            btn.innerText = "🎵";
+        } else {
+            music.pause();
+            btn.innerText = "🔇";
+        }
+    }
+
+    function popNode(elem) {
+        elem.classList.add('popped');
+        confetti({ particleCount: 25, spread: 60, colors: ['#00f2fe', '#4facfe', '#ffffff'] });
+    }
+
+    function initCanvas() {
+        const cvs = document.getElementById('drawCanvas');
+        const ctx = cvs.getContext('2d');
+        let drawing = false;
+
+        ctx.strokeStyle = '#00f2fe';
+        ctx.lineWidth = 2;
+        ctx.shadowBlur = 8;
+        ctx.shadowColor = '#00f2fe';
+
+        function draw(e) {
+            if(!drawing) return;
+            const rect = cvs.getBoundingClientRect();
+            const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+            const y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+        }
+
+        cvs.addEventListener('mousedown', () => { drawing = true; ctx.beginPath(); });
+        cvs.addEventListener('mouseup', () => drawing = false);
+        cvs.addEventListener('mousemove', draw);
+        cvs.addEventListener('touchstart', () => { drawing = true; ctx.beginPath(); });
+        cvs.addEventListener('touchend', () => drawing = false);
+        cvs.addEventListener('touchmove', draw);
+    }
+
+    function fireworks() {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 }, colors: ['#00f2fe', '#38bdf8', '#ffffff'] });
+    }
 </script>
 </body>
-                </html>
+    </html>
